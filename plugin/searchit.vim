@@ -24,7 +24,12 @@ function! Searchit(engine, keyword)
     endif
 
     let l:url=l:engine_url.a:keyword
-    " xdg-open for Linux
-    exe 'silent! !'.'xdg-open'.' "'.l:url.'" &> /dev/null &'
+
+    " TODO currently windows not supported
+    if has('mac') || has('macunix')
+        exec 'silent! !open "'.l:url.'"'
+    else " xdg-open for Linux
+        exec 'silent! !'.'xdg-open'.' "'.l:url.'" &> /dev/null &'
+    endif
 endfunction
 
