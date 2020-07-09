@@ -12,24 +12,27 @@
 command! -nargs=+ Searchit :call Searchit(<f-args>)
 
 function! Searchit(engine, keyword)
-    echo 'search engine "'.a:engine.'" is used to search keyword "'.a:keyword.'"'
-    if a:engine == 'google'
-        let l:engine_url='https://www.google.com/search?q='
-    elseif a:engine == 'stackoverflow'
-        let l:engine_url='https://stackoverflow.com/search?q='
-    elseif a:engine == 'baidu'
-        let l:engine_url='https://www.baidu.com/s?wd='
-    elseif a:engine == 'bing'
-        let l:engine_url='https://bing.com/search?q='
-    endif
+python3 << endOfPython
 
-    let l:url=l:engine_url.a:keyword
+import vim
+a_engine = vim.eval("a:engine")
+a_keyword = vim.eval("a:keyword")
+print(f"search engine `{a_engine}` is used to search keyword `{a_keyword}`")
 
-    " TODO currently windows not supported
-    if has('mac') || has('macunix')
-        exec 'silent! !open "'.l:url.'"'
-    else " xdg-open for Linux
-        exec 'silent! !'.'xdg-open'.' "'.l:url.'" &> /dev/null &'
-    endif
+engine_dict = {
+    "google": "https://www.google.com/search?q={query}",
+    "stackoverflow": "https://stackoverflow.com/search?q={query}",
+    "baidu": "https://www.baidu.com/s?wd={query}",
+    "bing": "https://bing.com/search?q={query}",
+}
+url = engine_dict[a_engine].format(query=a_keyword)
+
+# TODO currently windows not supported
+if vim.eval("has('macunix')") or vim.eval("has('mac')"):
+    vim.command(f'silent! !open "{url}"')
+else:
+    vim.command(f'silent! !xdg-open "{url}" &> /dev/null &')
+
+endOfPython
 endfunction
 
