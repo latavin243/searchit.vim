@@ -22,11 +22,8 @@ endif
 python3 << endOfPython
 
 import vim
-a_engine = vim.eval('a:engine')
-a_keyword = vim.eval('a:keyword')
-l_open_url_command = vim.eval('l:open_url_command')
-print(f'search engine `{a_engine}` is used to search keyword `{a_keyword}`')
 
+default_engine = 'google'
 engine_dict = {
     'google': 'https://www.google.com/search?q={query}',
     'stackoverflow': 'https://stackoverflow.com/search?q={query}',
@@ -45,6 +42,13 @@ engine_dict = {
     'bilibili': 'http://www.bilibili.com/search?keyword={query}',
     'zhihu': 'https://www.zhihu.com/search?type=content&q={query}',
 }
+a_engine = vim.eval('a:engine')
+a_keyword = vim.eval('a:keyword')
+l_open_url_command = vim.eval('l:open_url_command')
+if a_engine not in engine_dict:
+    print(f'search engine `{a_engine}` not found, use `{default_engine}` as instead')
+    a_engine = default_engine
+print(f'search engine `{a_engine}` is used to search keyword `{a_keyword}`')
 url = engine_dict[a_engine].format(query=a_keyword)
 print(f'opening `{url}`')
 vim.command(l_open_url_command.format(url=url))
